@@ -2,9 +2,9 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Safe-Alleys — Community Safety Map of India (DIGIPIN)</title>
-<meta name="description" content="Free, no-login, privacy-first PWA showing where people report feeling unsafe — at alley-level precision using DIGIPIN. Colour-coded like a traffic map, readable without reading.">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=no">
+<title>Safe-Alleys — Safety Map of India</title>
+<meta name="description" content="Tap the map to see the DIGIPIN of any spot in India. Free, private, no login. Community safety reports coming soon — colour-coded like a traffic map.">
 <meta name="robots" content="index, follow">
 <link rel="canonical" href="https://safealleys.pages.dev/">
 <meta name="theme-color" content="#0f172a">
@@ -12,95 +12,65 @@
 <link rel="icon" href="/icons/icon-192.png">
 <link rel="apple-touch-icon" href="/icons/icon-192.png">
 <meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta property="og:title" content="Safe-Alleys — Community Safety Map of India">
-<meta property="og:description" content="Where do people feel unsafe? See it on the map. Free, private, no login. Alley-level precision with DIGIPIN.">
+<meta property="og:title" content="Safe-Alleys — Safety Map of India">
+<meta property="og:description" content="Free, private, no login. Tap the map — see the DIGIPIN of any spot. Community safety reports coming soon.">
 <meta property="og:type" content="website">
 <meta name="google-site-verification" content="GlkDu5ZL-CyyKjwPSj9d9X3Y2qsHUj_qAwRwxiLr7nI">
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
 <link rel="stylesheet" href="/style.css">
-<script type="application/ld+json">
-{"@context":"https://schema.org","@type":"WebSite","name":"Safe-Alleys","url":"https://safealleys.pages.dev/","description":"Free, no-login, privacy-first community safety map of India using DIGIPIN.","inLanguage":["en","hi"]}
-</script>
 </head>
-<body>
-<header class="topbar">
+<body class="app-mode">
+
+<div id="map" role="application" aria-label="Safety map of India"></div>
+
+<header class="hud-top">
   <div class="brand">
-    <img src="/icons/icon-192.png" alt="Safe-Alleys" width="34" height="34">
-    <div>
-      <strong>Safe-Alleys</strong>
-      <small data-en="Community safety map" data-hi="कम्युनिटी सेफ्टी मैप">Community safety map</small>
-    </div>
+    <img src="/icons/icon-192.png" alt="" width="30" height="30">
+    <strong>Safe-Alleys</strong>
   </div>
-  <div class="top-actions">
-    <button id="lang-btn" class="ghost" aria-label="Switch language">हिं</button>
-    <button id="install-btn" class="primary hidden" data-en="📲 Install App" data-hi="📲 इंस्टॉल करें">📲 Install App</button>
+  <div class="hud-actions">
+    <button id="lang-btn" class="hud-btn" aria-label="भाषा / Language">हिं</button>
+    <button id="install-btn" class="hud-btn hidden" aria-label="Install app">📲</button>
   </div>
 </header>
 
-<div class="advisory" role="note">
-  ⚠️ <span data-en="Safe-Alleys never marks any place as “safe”. It only shows where people have reported feeling unsafe. No reports does NOT mean safe — it means not enough data. This is an advisory tool, not an emergency service. In an emergency, call 112." data-hi="Safe-Alleys कोई भी जगह को “सुरक्षित” नहीं मानता। यह केवल दिखाता है कि लोगों ने कहाँ असुरक्षित महसूस करने की रिपोर्ट दी है। कोई रिपोर्ट न होना सुरक्षित होना नहीं है — इसका मतलब है पर्याप्त डेटा नहीं है। यह सलाहकार टूल है, आपातकालीन सेवा नहीं। आपात स्थिति में 112 पर कॉल करें।">Safe-Alleys never marks any place as “safe”. It only shows where people have reported feeling unsafe. No reports does NOT mean safe — it means not enough data. This is an advisory tool, not an emergency service. In an emergency, call 112.</span>
+<button id="advisory" class="advisory-chip" aria-expanded="false">
+  <span class="chip-short" data-en="⚠️ No data ≠ safe" data-hi="⚠️ डेटा नहीं = सुरक्षित नहीं">⚠️ No data ≠ safe</span>
+  <span class="chip-full hidden" data-en="⚠️ We never mark any place “safe”. We only show where people report feeling unsafe. No reports = not enough data. Emergency? Call 112." data-hi="⚠️ हम किसी जगह को “सुरक्षित” नहीं कहते। केवल रिपोर्ट दिखाते हैं। आपात में 112 पर कॉल करें।">⚠️ We never mark any place “safe”. We only show where people report feeling unsafe. No reports = not enough data. Emergency? Call 112.</span>
+</button>
+
+<button id="legend" class="legend-pill" aria-expanded="false">
+  <span class="chip-short">🟡🟠🔴 <span data-en="Meaning" data-hi="अर्थ">Meaning</span></span>
+  <span class="chip-full hidden">
+    <span class="lg"><i class="sw grey"></i><span data-en="Not enough data" data-hi="पर्याप्त डेटा नहीं">Not enough data</span></span>
+    <span class="lg"><i class="sw yellow"></i><span data-en="Some reports" data-hi="कुछ रिपोर्ट">Some reports</span></span>
+    <span class="lg"><i class="sw orange"></i><span data-en="Medium" data-hi="मध्यम">Medium</span></span>
+    <span class="lg"><i class="sw red"></i><span data-en="High" data-hi="अधिक">High</span></span>
+    <span class="lg-note" data-en="Never green — no place is called “safe”." data-hi="कभी हरा नहीं — कोई जगह “सुरक्षित” नहीं कहलाती।">Never green — no place is called “safe”.</span>
+  </span>
+</button>
+
+<div class="dock" role="navigation">
+  <a href="/about.html" class="dock-btn" aria-label="About">
+    <span class="ico">ℹ️</span><span class="lbl" data-en="About" data-hi="जानकारी">About</span>
+  </a>
+  <button id="report-fab" class="fab" aria-label="Report a spot">
+    <span class="ico">➕</span><span class="lbl" data-en="Report" data-hi="रिपोर्ट">Report</span>
+  </button>
+  <button id="locate-btn" class="dock-btn" aria-label="My location">
+    <span class="ico">🎯</span><span class="lbl" data-en="My area" data-hi="मेरा इलाका">My area</span>
+  </button>
 </div>
 
-<main>
-<section class="hero">
-  <h1 data-en="Where do people feel unsafe?" data-hi="लोग कहाँ असुरक्षित महसूस करते हैं?">Where do people feel unsafe?</h1>
-  <p class="sub" data-en="A free, private, no-login map of community-reported risk — at alley-level precision using DIGIPIN. Colour-coded like a traffic map, understandable without reading." data-hi="एक मुफ़्त, निजी, बिना लॉगिन मैप — DIGIPIN से गली-स्तर की सटीकता पर समुदाय द्वारा रिपोर्ट किए गए जोखिम का। ट्रैफ़िक मैप की तरह रंग-कोडेड, बिना पढ़े भी समझ आता है।">A free, private, no-login map of community-reported risk — at alley-level precision using DIGIPIN. Colour-coded like a traffic map, understandable without reading.</p>
-  <div class="hero-badges">
-    <span>🔓 <span data-en="No login, free forever" data-hi="कोई लॉगिन नहीं, हमेशा मुफ़्त">No login, free forever</span></span>
-    <span>🛡️ <span data-en="Your data stays on your device" data-hi="आपका डेटा आपके डिवाइस पर रहता है">Your data stays on your device</span></span>
-    <span>🗺️ <span data-en="Alley-level DIGIPIN precision" data-hi="गली-स्तर DIGIPIN सटीकता">Alley-level DIGIPIN precision</span></span>
-  </div>
-  <p id="ios-hint" class="ios-hint hidden" data-en="📱 On iPhone: tap Share → “Add to Home Screen” to install." data-hi="📱 iPhone पर: Share → “Add to Home Screen” दबाकर इंस्टॉल करें।">📱 On iPhone: tap Share → “Add to Home Screen” to install.</p>
-</section>
+<div id="sheet" class="sheet" aria-hidden="true">
+  <div class="sheet-handle" aria-hidden="true"></div>
+  <div id="sheet-content"></div>
+  <button class="sheet-close" aria-label="Close">✕</button>
+</div>
 
-<section class="map-section">
-  <h2 data-en="Try the map — tap anywhere in India" data-hi="मैप आज़माएँ — भारत में कहीं भी टैप करें">Try the map — tap anywhere in India</h2>
-  <p class="map-note" data-en="Reports and the colour-coded risk layer arrive in Phase 1. For now, tap any spot to see its DIGIPIN — the 10-character digital address of that exact ~4m cell." data-hi="रिपोर्ट और रंग-कोडेड जोखिम लेयर Phase 1 में आएगी। अभी किसी भी जगह पर टैप करके उसका DIGIPIN देखें — उस ~4m सेल का 10-अक्षर का डिजिटल पता।">Reports and the colour-coded risk layer arrive in Phase 1. For now, tap any spot to see its DIGIPIN — the 10-character digital address of that exact ~4m cell.</p>
-  <div id="map" role="application" aria-label="Interactive map of India"></div>
-  <div class="legend" aria-label="Risk colour legend">
-    <div class="legend-item"><span class="swatch grey"></span><span data-en="Not enough data" data-hi="पर्याप्त डेटा नहीं">Not enough data</span></div>
-    <div class="legend-item"><span class="swatch yellow"></span><span data-en="Some reports" data-hi="कुछ रिपोर्ट">Some reports</span></div>
-    <div class="legend-item"><span class="swatch orange"></span><span data-en="Medium reports" data-hi="मध्यम रिपोर्ट">Medium reports</span></div>
-    <div class="legend-item"><span class="swatch red"></span><span data-en="High reports" data-hi="अधिक रिपोर्ट">High reports</span></div>
-    <div class="legend-note" data-en="Never green — we never label a place “safe”." data-hi="कभी हरा नहीं — हम किसी जगह को “सुरक्षित” नहीं कहते।">Never green — we never label a place “safe”.</div>
-  </div>
-</section>
-
-<section class="how">
-  <h2 data-en="How it will work" data-hi="यह कैसे काम करेगा">How it will work</h2>
-  <div class="steps">
-    <div class="step"><div class="step-ico">👁️</div><h3 data-en="1. See" data-hi="1. देखें">1. See</h3><p data-en="Open the map. Colours show where people report feeling unsafe — like a traffic layer." data-hi="मैप खोलें। रंग दिखाते हैं कि लोग कहाँ असुरक्षित महसूस करते हैं — ट्रैफ़िक लेयर की तरह।">Open the map. Colours show where people report feeling unsafe — like a traffic layer.</p></div>
-    <div class="step"><div class="step-ico">📍</div><h3 data-en="2. Report" data-hi="2. रिपोर्ट करें">2. Report</h3><p data-en="Tap the spot, pick an icon — unlit stretch, harassment, theft, animals, flooding — done. No login." data-hi="जगह टैप करें, आइकन चुनें — अंधेरा, उत्पीड़न, चोरी, जानवर, बाढ़ — हो गया। कोई लॉगिन नहीं।">Tap the spot, pick an icon — unlit stretch, harassment, theft, animals, flooding — done. No login.</p></div>
-    <div class="step"><div class="step-ico">👍</div><h3 data-en="3. Verify" data-hi="3. पुष्टि करें">3. Verify</h3><p data-en="People nearby confirm “still like this today?” with one tap. Community verification keeps data fresh." data-hi="आस-पास के लोग एक टैप में पुष्टि करते हैं — “आज भी ऐसा ही है?” समुदाय की पुष्टि से डेटा ताज़ा रहता है।">People nearby confirm “still like this today?” with one tap. Community verification keeps data fresh.</p></div>
-  </div>
-</section>
-
-<section class="privacy">
-  <h2 data-en="Privacy-first, by design" data-hi="निजता सबसे पहले, डिज़ाइन से ही">Privacy-first, by design</h2>
-  <ul class="privacy-list">
-    <li>🔒 <span data-en="Your profile (age band, gender, routes) lives only in your device's IndexedDB — it never leaves your phone." data-hi="आपकी प्रोफ़ाइल (आयु वर्ग, लिंग, रूट) केवल आपके डिवाइस के IndexedDB में रहती है — कभी आपके फ़ोन से बाहर नहीं जाती।">Your profile (age band, gender, routes) lives only in your device's IndexedDB — it never leaves your phone.</span></li>
-    <li>🕵️ <span data-en="The server receives only anonymised reports. No accounts, no tracking, no ad personalisation." data-hi="सर्वर को केवल गुमनाम रिपोर्ट मिलती हैं। कोई अकाउंट नहीं, कोई ट्रैकिंग नहीं, कोई विज्ञापन-पर्सनलाइज़ेशन नहीं।">The server receives only anonymised reports. No accounts, no tracking, no ad personalisation.</span></li>
-    <li>💸 <span data-en="Free forever. Children on parents' phones can use it — no payment methods, no friction." data-hi="हमेशा मुफ़्त। माता-पिता के फ़ोन पर बच्चे भी इस्तेमाल कर सकते हैं — कोई भुगतान नहीं।">Free forever. Children on parents' phones can use it — no payment methods, no friction.</span></li>
-    <li>📄 <a href="/privacy.html" data-en="Read the full privacy policy →" data-hi="पूरी गोपनीयता नीति पढ़ें →">Read the full privacy policy →</a></li>
-  </ul>
-</section>
-
-<section class="roadmap">
-  <h2 data-en="Build status" data-hi="बिल्ड स्थिति">Build status</h2>
-  <ol class="phases">
-    <li class="done">✅ <span data-en="Phase 0 — PWA skeleton, DIGIPIN, installable, offline" data-hi="Phase 0 — PWA ढाँचा, DIGIPIN, इंस्टॉलेबल, ऑफ़लाइन">Phase 0 — PWA skeleton, DIGIPIN, installable, offline</span></li>
-    <li>🟡 <span data-en="Phase 1 — Report flow, first city, colour overlay" data-hi="Phase 1 — रिपोर्ट प्रवाह, पहला शहर, रंग ओवरले">Phase 1 — Report flow, first city, colour overlay</span></li>
-    <li>⏳ <span data-en="Phase 2 — Community verification + confidence scores" data-hi="Phase 2 — समुदाय सत्यापन + विश्वास स्कोर">Phase 2 — Community verification + confidence scores</span></li>
-    <li>⏳ <span data-en="Phase 3 — Trip mode, pre-trip briefings, alerts" data-hi="Phase 3 — ट्रिप मोड, पूर्व-यात्रा ब्रीफ़िंग, अलर्ट">Phase 3 — Trip mode, pre-trip briefings, alerts</span></li>
-  </ol>
-</section>
-</main>
-
-<footer>
-  <p data-en="Map data © OpenStreetMap contributors (ODbL). DIGIPIN is India Post's open digital address system. Safe-Alleys is an independent community project — not affiliated with India Post." data-hi="मैप डेटा © OpenStreetMap contributors (ODbL)। DIGIPIN इंडिया पोस्ट का ओपन डिजिटल पता प्रणाली है। Safe-Alleys एक स्वतंत्र सामुदायिक परियोजना है — इंडिया पोस्ट से संबद्ध नहीं।">Map data © OpenStreetMap contributors (ODbL). DIGIPIN is India Post's open digital address system. Safe-Alleys is an independent community project — not affiliated with India Post.</p>
-  <p><a href="/privacy.html" data-en="Privacy Policy" data-hi="गोपनीयता नीति">Privacy Policy</a> · <a href="https://github.com/skmstudioservices-cyber/Safe-Alleys" rel="noopener" target="_blank" data-en="GitHub" data-hi="GitHub">GitHub</a></p>
-</footer>
+<div id="ios-hint" class="ios-hint hidden" data-en="📱 Install: Share → Add to Home Screen" data-hi="📱 इंस्टॉल: Share → Add to Home Screen">📱 Install: Share → Add to Home Screen</div>
 
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script src="/app.js"></script>

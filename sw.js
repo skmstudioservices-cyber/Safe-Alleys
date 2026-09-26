@@ -2,7 +2,7 @@
    Strategy: cache-first for same-origin assets; network passthrough for map tiles/CDN (tile caching with quota in a later phase). */
 var CACHE = "safealleys-v1";
 var CORE = [
-  "/", "/index.html", "/privacy.html", "/style.css", "/app.js",
+  "/", "/index.html", "/about.html", "/privacy.html", "/style.css", "/app.js",
   "/manifest.json", "/icons/icon-192.png", "/icons/icon-512.png"
 ];
 
