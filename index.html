@@ -18,7 +18,7 @@
 <meta property="og:description" content="Free, private, no login. Tap the map — see the DIGIPIN of any spot. Community safety reports coming soon.">
 <meta property="og:type" content="website">
 <meta name="google-site-verification" content="GlkDu5ZL-CyyKjwPSj9d9X3Y2qsHUj_qAwRwxiLr7nI">
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-GLNKRTPSC1"></script>
+<script async src="https://www.googletagmanager.com/gtag/js"></script>
 <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-GLNKRTPSC1');</script><link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
 <link rel="stylesheet" href="/style.css">
 </head>
@@ -75,5 +75,6 @@
 
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script src="/app.js"></script>
+<script>(function(){try{if(!navigator.sendBeacon)return;var E='https://digipincode.india-in.workers.dev/api/collect',t0=Date.now(),ms=0,s=false;window.addEventListener('scroll',function(){try{var h=document.documentElement.scrollHeight-window.innerHeight,p=h>0?Math.round(window.scrollY/h*100):0;if(p>ms)ms=p}catch(e){}},{passive:true});function send(){if(s)return;s=true;try{navigator.sendBeacon(E,JSON.stringify({host:location.hostname,path:location.pathname,ref:document.referrer||'',event:'view',dwell:Math.round((Date.now()-t0)/1000),scroll:ms}))}catch(e){}}window.addEventListener('pagehide',send,{once:true});document.addEventListener('visibilitychange',function(){if(document.visibilityState==='hidden')send()});}catch(e){}})();</script>
 </body>
 </html>
